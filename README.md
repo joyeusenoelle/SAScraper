@@ -1,6 +1,8 @@
 # SAScraper
 A thread scraper for the Something Awful forums
 
+Before you run the scraper, you need to give it your forums username and password in `config.ini`. Don't worry, nobody can see this but you and Something Awful.
+
 It's simple to run:
 
 `python3 main.py %threadid%`
