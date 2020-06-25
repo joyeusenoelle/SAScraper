@@ -1,5 +1,7 @@
 # SAScraper
-A thread scraper for the Something Awful forums. **It requires Python 3.6+.**
+A thread scraper for the Something Awful forums. **It requires Python 3.6+ and the requests module.**
+
+Make sure you run `pip3 install requests`.
 
 Before you run the scraper, you need to give it your forums username and password in `config.ini`. Don't worry, nobody can see this but you and Something Awful.
 
