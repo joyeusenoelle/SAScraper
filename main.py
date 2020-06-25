@@ -40,7 +40,7 @@ def main(threadid):
       i -= 1
       break
     print(f"Fetching page {i} in thread {threadid}.")
-    with open(f"archive/{threadid}/page{i}.html", "w+") as file:
+    with open(f"archive/{threadid}/page{i}.html", "w+", encoding="utf-8") as file:
       file.write(r.text)
     i += 1
 
