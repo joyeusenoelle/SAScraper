@@ -1,5 +1,4 @@
 import requests, time, re, os, configparser, sys
-from bs4 import BeautifulSoup
 
 def main(threadid):
   if threadid==None:
