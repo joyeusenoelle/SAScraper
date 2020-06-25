@@ -11,4 +11,4 @@ where `%threadid%` is from the URL of the thread you want to scrape. For example
 
 `python3 main.py 3908778`
 
-Each thread will go in its own folder under the `/archive` directory. The scraper will keep track of the last page it scraped and only update from there in the future if you run it again.
+Each thread will go in its own folder under the `/archive` directory. The scraper will keep track of the last page it scraped and only update from there in the future if you run it again. As a convenience, it re-fetches the last page each time you run it, to catch last-minute edits.
