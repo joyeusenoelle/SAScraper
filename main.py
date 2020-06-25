@@ -8,7 +8,7 @@ def main(threadid):
     os.mkdir("archive")
   if not os.path.isdir(f"archive/{threadid}"):
     os.mkdir(f"archive/{threadid}")
-  config = configparser.ConfigParser()
+  config = configparser.ConfigParser(interpolation=None)
   if not os.path.isfile('config.ini'):
     print("config.ini is missing!")
     sys.exit(0)
