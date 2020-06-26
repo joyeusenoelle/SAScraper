@@ -15,8 +15,9 @@ where `%threadid%` is from the URL of the thread you want to scrape. For example
 
 Each thread will go in its own folder under the `/archive` directory. The scraper will keep track of the last page it scraped and only update from there in the future if you run it again. As a convenience, it re-fetches the last page each time you run it, to catch last-minute edits.
 
-If you include the `--images` flag:
+If you include the `-i` or `--images` flags:
 
-`python3 main.py 3908778`
+`python3 main.py 3908778 -i`
+`python3 main.py 3908778 --images`
 
 then the script will grab each image it can from the page and store it locally, so you don't have to worry about remote sites going down. **This may require a lot of bandwidth and disk space! Tread carefully with this option.**
