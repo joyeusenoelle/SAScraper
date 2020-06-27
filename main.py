@@ -113,7 +113,9 @@ def main(args):
             src = "https:" + src
           imgname = src.split("/")[-1]
           fullpath = f"archive/{args.thread}/images/{imgname}"
-          if not os.path.isfile(fullpath):
+          if os.path.isfile(fullpath):
+            tag["src"] = f"images/{imgname}"
+          else:
             img = s.get(src, stream=True)
             if img.status_code == 200:
               try:
@@ -124,7 +126,7 @@ def main(args):
               except:
                 print(f"\tImage {src} not available.")
             else:
-              print(f"Image {src} not available.")
+              print(f"\tImage {src} not available.")
       file.write(soup.prettify())
     i += 1
 
