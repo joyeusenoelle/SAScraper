@@ -17,7 +17,9 @@ Each thread will go in its own folder under the `/archive` directory. The scrape
 
 If you include the `-i` or `--images` flags:
 
-```python3 main.py 3908778 -i
-python3 main.py 3908778 --images```
+```
+python3 main.py 3908778 -i
+python3 main.py 3908778 --images
+```
 
 then the script will grab each image it can from the page and store it locally, so you don't have to worry about remote sites going down. **This may require a lot of bandwidth and disk space! Tread carefully with this option.**
