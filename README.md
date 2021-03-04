@@ -23,3 +23,11 @@ python3 main.py 3908778 --images
 ```
 
 then the script will grab each image it can from the page and store it locally, so you don't have to worry about remote sites going down. **This may require a lot of bandwidth and disk space! Tread carefully with this option.**
+
+## Hey Discendo Vox!
+You should instead run
+```
+python3 scraper.py
+```
+
+This is a variant I put together specifically for grabbing Gaybies nominations from the 2020 thread. It searches each page for a nomination, and then collapses the page to only the posts that contain nominations. This should make your job much easier!
