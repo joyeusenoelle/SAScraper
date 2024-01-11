@@ -13,4 +13,4 @@ psycopg2==2.8.5
 requests==2.31.0
 soupsieve==2.0.1
 urllib3>=1.26.5
-Werkzeug==1.0.1
+Werkzeug==3.0.1
