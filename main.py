@@ -1,7 +1,9 @@
 import requests, time, re, os, configparser, sys, argparse
 from bs4 import BeautifulSoup
-from PIL import Image
+from PIL import Image, ImageFile
 from io import BytesIO
+
+
 
 css_to_change = ["https://www.somethingawful.com/css/main.css?12",
                  "https://forums.somethingawful.com/css/bbcode.css?1456974408",
@@ -49,12 +51,12 @@ def main(args):
       r = requests.get(scripts_to_change[f])
       with open(f"archive/scripts/{scripts_to_change_to[f]}", "w+") as file:
         file.write(r.text)
-    
+
   if not os.path.isdir(f"archive/{args.thread}"):
     print(f"Creating directory for {args.thread}...")
     os.mkdir(f"archive/{args.thread}")
   if not os.path.isdir(f"archive/{args.thread}/images"):
-    print(f"Creating directory for {args.thread}/images...")  
+    print(f"Creating directory for {args.thread}/images...")
     os.mkdir(f"archive/{args.thread}/images")
   config = configparser.ConfigParser(interpolation=None)
   if not os.path.isfile('config.ini'):
@@ -73,7 +75,8 @@ def main(args):
 
   s = requests.Session()
   q = s.post("https://forums.somethingawful.com/account.php", data=info)
-
+  # Provide User-Agent  to minimise chance of server request rejections.
+  headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36"}
   if f"lastpage{args.thread}" in config["DEFAULT"] and config["DEFAULT"][f"lastpage{args.thread}"] != "":
     lastpage = int(config["DEFAULT"][f"lastpage{args.thread}"])
   else:
@@ -84,7 +87,7 @@ def main(args):
   while True:
     time.sleep(0.05)
     payload = {'threadid': args.thread, 'pagenumber': str(i)}
-    r = s.get("https://forums.somethingawful.com/showthread.php", params=payload)
+    r = s.get("https://forums.somethingawful.com/showthread.php", params=payload, headers=headers)
     if "Specified thread was not found in the live forums." in r.text:
       print("That thread does not exist or is not accessible to you.")
       parse_ok = False
@@ -109,24 +112,48 @@ def main(args):
       if args.images:
         for tag in soup.find_all("img",{"src":True}):
           src = tag["src"]
-          if src[:4] != "http":
+          # Remove trailing / from link
+          src = src.rstrip("/")
+          # Handle //fi.somethingawful.com/* images.
+          if src[:2] == "//":
             src = "https:" + src
+          # Handle forum attachment images.
+          if src[:4] != "http":
+            src = "https://forums.somethingawful.com/" + src
+            # Forum attachment images may be missing data, accept these truncated images anyway:
+            ImageFile.LOAD_TRUNCATED_IMAGES = True
           imgname = src.split("/")[-1]
+          # Constrain filename length to 255 char limit.
+          imgname = imgname[:255]
           fullpath = f"archive/{args.thread}/images/{imgname}"
           if os.path.isfile(fullpath):
             tag["src"] = f"images/{imgname}"
           else:
-            img = s.get(src, stream=True)
-            if img.status_code == 200:
-              try:
-                theimage = Image.open(BytesIO(img.content))
-                print(f"\tSaving {fullpath}.")
-                theimage.save(fullpath)
-                tag["src"] = f"images/{imgname}"
-              except:
-                print(f"\tImage {src} not available.")
-            else:
-              print(f"\tImage {src} not available.")
+            try:
+              img = s.get(src, stream=True, headers=headers, timeout=(3.0, 5.0))
+              if img.status_code == 200:
+                content_type = img.headers.get('Content-Type', '')
+                # Handle SVG images or videos.
+                if 'image/svg+xml' in content_type or 'video' in content_type:
+                  try:
+                    with open(fullpath, "wb") as f:
+                      f.write(img.content)
+                      tag["src"] = f"images/{imgname}"
+                      print(f"\tSaving {fullpath}.")
+                  except Exception as e:
+                    print(f"Failed to process {src}: {e}")
+                # Save raster images.
+                else:
+                  try:
+                    theimage = Image.open(BytesIO(img.content))
+                    theimage.save(fullpath, format=theimage.format)
+                    tag["src"] = f"images/{imgname}"
+                    print(f"\tSaving image {fullpath}.")
+                  except Exception as e:
+                    print(f"\tFailed to process image {src}: {e}")
+            # Handle network errors (404, 500, etc.).
+            except Exception as e:
+                  print(f"\tFailed to retrieve {src}: {e}")
       file.write(soup.prettify())
     i += 1
 

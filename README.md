@@ -1,5 +1,5 @@
 # SAScraper
-A thread scraper for the Something Awful forums. **It requires Python 3.6+ and the requests, PIL, and BeautifulSoup modules.**
+A thread scraper for the Something Awful forums. **It requires Python 3.14+ and the requests, PIL, and BeautifulSoup modules.**
 
 Make sure you run `pip3 install -r requirements.txt`.
 
